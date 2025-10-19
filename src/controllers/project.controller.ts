@@ -4,6 +4,7 @@ import {
   getProjectById,
   createProject,
   updateProject,
+  deleteProject,
 } from "../services/project.service.js";
 
 export const getProjectsController = async (
@@ -52,6 +53,19 @@ export const updateProjectController = async (
 ) => {
   try {
     const project = await updateProject(Number(req.params.id), req.body);
+    res.json(project);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteProjectController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const project = await deleteProject(Number(req.params.id));
     res.json(project);
   } catch (error) {
     next(error);

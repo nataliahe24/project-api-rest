@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import {
   createProjectController,
+  deleteProjectController,
   getProjectByIdController,
   getProjectsController,
   updateProjectController,
@@ -125,6 +126,26 @@ router.put(
   validateRequest,
   updateProjectController
 );
+
+/**
+ * @openapi
+ * /project/{id}:
+ *   delete:
+ *     summary: Delete a project
+ *     tags: [Project]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: No Content
+ *       404:
+ *         description: Not found
+ */
+router.delete("/:id", deleteProjectController);
 
 router.use(globalErrorHandler);
 export { router };

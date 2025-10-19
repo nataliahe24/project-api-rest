@@ -57,3 +57,12 @@ export const updateProject = async (id: number, project: Project) => {
   });
   return updatedProject;
 };
+
+export const deleteProject = async (id: number) => {
+  const deletedProject = await prisma.project.findUnique({ where: { id } });
+  if (!deletedProject) {
+    throw new AppError("Project not found", 404, "NotFoundError");
+  }
+  await prisma.project.delete({ where: { id } });
+  return deletedProject;
+};
