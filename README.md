@@ -145,9 +145,9 @@ Current coverage for core business logic:
 
 - **Utils**: 100% coverage (AppError, DateIsRequired) - 20 tests
 - **Validations**: 100% coverage (body.validation) - 15 tests
-- **Service Business Logic**: Integration tests - 14 tests
+- **Service**: Mocked Prisma tests - 20 tests
 
-**Total: 49 tests passing** ✅
+**Total: 55 tests** ✅
 
 ## 📚 API Endpoints
 
@@ -449,13 +449,14 @@ Tests focus on critical business logic:
 - ✅ Date format validation (ISO8601)
 - ✅ Empty body handling for PUT
 
-### 4. **Service Business Logic** (`project.service.integration.test.ts`)
+### 4. **Service with Mocked Prisma** (`project.service.test.ts`)
 
-- ✅ Business rules validation (endDate based on status)
-- ✅ Status normalization (case-insensitive)
-- ✅ Date handling (null, undefined, Date objects, empty strings)
-- ✅ Description optional field handling
-- ✅ AppError creation for different scenarios
+- ✅ **getProjects**: Returns all projects, handles empty arrays
+- ✅ **getProjectById**: Returns project by ID, throws AppError (404) when not found
+- ✅ **createProject**: Creates in progress/completed projects, validates endDate rules
+- ✅ **updateProject**: Updates fields, validates status transitions, enforces business rules
+- ✅ **deleteProject**: Deletes projects, validates existence before deletion
+- ✅ Uses mocked PrismaClient for isolated unit testing
 
 ### Running Tests
 
@@ -474,8 +475,9 @@ npm run test:coverage
 
 ```
 Test Suites: 4 passed, 4 total
-Tests:       49 passed, 49 total
+Tests:       52 assed, 52total
 Snapshots:   0 total
+Time:        ~10s
 ```
 
 ## 🐛 Error Handling

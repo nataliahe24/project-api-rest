@@ -12,6 +12,7 @@ module.exports = {
   ],
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
+    '^.*generated/prisma/client\\.js$': '<rootDir>/src/utils/mocks/prisma.ts',
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   transform: {
