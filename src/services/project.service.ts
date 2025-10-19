@@ -40,3 +40,20 @@ export const createProject = async (project: Project) => {
 
   return newProject;
 };
+
+export const updateProject = async (id: number, project: Project) => {
+  const status = project.status.toLowerCase();
+  const endDate = project.endDate?.toString();
+  const endDateValue = DateIsRequired(status as ProjectStatus, endDate);
+  const updatedProject = await prisma.project.update({
+    where: { id },
+    data: {
+      name: project.name,
+      description: project.description ?? "",
+      status: project.status,
+      startDate: project.startDate,
+      endDate: endDateValue,
+    },
+  });
+  return updatedProject;
+};
