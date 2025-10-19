@@ -4,6 +4,7 @@ import {
   createProjectController,
   getProjectByIdController,
   getProjectsController,
+  updateProjectController,
 } from "../controllers/project.controller.js";
 import {
   createProjectValidation,
@@ -94,4 +95,36 @@ router.post(
   createProjectController
 );
 
+/**
+ * @openapi
+ * /project/{id}:
+ *   put:
+ *     summary: Update a project
+ *     tags: [Project]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Updated
+ *       404:
+ *         description: Not found
+ */
+router.put(
+  "/:id",
+  updateProjectValidation,
+  validateRequest,
+  updateProjectController
+);
+
+router.use(globalErrorHandler);
 export { router };

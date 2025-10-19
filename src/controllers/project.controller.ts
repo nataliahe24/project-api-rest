@@ -3,6 +3,7 @@ import {
   getProjects,
   getProjectById,
   createProject,
+  updateProject,
 } from "../services/project.service.js";
 
 export const getProjectsController = async (
@@ -39,6 +40,19 @@ export const createProjectController = async (
   try {
     const project = await createProject(req.body);
     res.status(201).json(project);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProjectController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const project = await updateProject(Number(req.params.id), req.body);
+    res.json(project);
   } catch (error) {
     next(error);
   }
