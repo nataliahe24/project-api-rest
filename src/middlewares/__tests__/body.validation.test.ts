@@ -1,17 +1,17 @@
-import { describe, expect, test } from '@jest/globals';
-import { validationResult } from 'express-validator';
-import { createProjectValidation, updateProjectValidation } from '../body.validation';
-import type { Request, Response } from 'express';
+import { describe, expect, test } from "@jest/globals";
+import { validationResult } from "express-validator";
+import {
+  createProjectValidation,
+  updateProjectValidation,
+} from "../body.validation.js";
+import type { Request, Response } from "express";
 
-// Mock Express Request
 const createMockRequest = (body: any): Partial<Request> => ({
   body,
 });
 
-// Mock Express Response
 const createMockResponse = (): Partial<Response> => ({});
 
-// Helper to run validations
 const runValidations = async (
   validations: any[],
   req: Partial<Request>,
@@ -23,13 +23,13 @@ const runValidations = async (
   return validationResult(req as Request);
 };
 
-describe('createProjectValidation', () => {
-  test('should pass with valid complete project data', async () => {
+describe("createProjectValidation", () => {
+  test("should pass with valid complete project data", async () => {
     const req = createMockRequest({
-      name: 'Test Project',
-      description: 'Test Description',
-      status: 'in progress',
-      startDate: '2025-01-01T00:00:00.000Z',
+      name: "Test Project",
+      description: "Test Description",
+      status: "in progress",
+      startDate: "2025-01-01T00:00:00.000Z",
     });
     const res = createMockResponse();
 
@@ -38,13 +38,13 @@ describe('createProjectValidation', () => {
     expect(result.isEmpty()).toBe(true);
   });
 
-  test('should pass with valid completed project with endDate', async () => {
+  test("should pass with valid completed project with endDate", async () => {
     const req = createMockRequest({
-      name: 'Completed Project',
-      description: 'Completed Description',
-      status: 'completed',
-      startDate: '2025-01-01T00:00:00.000Z',
-      endDate: '2025-12-31T00:00:00.000Z',
+      name: "Completed Project",
+      description: "Completed Description",
+      status: "completed",
+      startDate: "2025-01-01T00:00:00.000Z",
+      endDate: "2025-12-31T00:00:00.000Z",
     });
     const res = createMockResponse();
 
@@ -53,11 +53,11 @@ describe('createProjectValidation', () => {
     expect(result.isEmpty()).toBe(true);
   });
 
-  test('should fail when name is missing', async () => {
+  test("should fail when name is missing", async () => {
     const req = createMockRequest({
-      description: 'Test Description',
-      status: 'in progress',
-      startDate: '2025-01-01T00:00:00.000Z',
+      description: "Test Description",
+      status: "in progress",
+      startDate: "2025-01-01T00:00:00.000Z",
     });
     const res = createMockResponse();
 
@@ -65,14 +65,14 @@ describe('createProjectValidation', () => {
 
     expect(result.isEmpty()).toBe(false);
     const errors = result.array();
-    expect(errors.some((e: any) => e.path === 'name')).toBe(true);
+    expect(errors.some((e: any) => e.path === "name")).toBe(true);
   });
 
-  test('should fail when description is missing', async () => {
+  test("should fail when description is missing", async () => {
     const req = createMockRequest({
-      name: 'Test Project',
-      status: 'in progress',
-      startDate: '2025-01-01T00:00:00.000Z',
+      name: "Test Project",
+      status: "in progress",
+      startDate: "2025-01-01T00:00:00.000Z",
     });
     const res = createMockResponse();
 
@@ -80,15 +80,15 @@ describe('createProjectValidation', () => {
 
     expect(result.isEmpty()).toBe(false);
     const errors = result.array();
-    expect(errors.some((e: any) => e.path === 'description')).toBe(true);
+    expect(errors.some((e: any) => e.path === "description")).toBe(true);
   });
 
-  test('should fail when status is invalid', async () => {
+  test("should fail when status is invalid", async () => {
     const req = createMockRequest({
-      name: 'Test Project',
-      description: 'Test Description',
-      status: 'invalid-status',
-      startDate: '2025-01-01T00:00:00.000Z',
+      name: "Test Project",
+      description: "Test Description",
+      status: "invalid-status",
+      startDate: "2025-01-01T00:00:00.000Z",
     });
     const res = createMockResponse();
 
@@ -96,15 +96,15 @@ describe('createProjectValidation', () => {
 
     expect(result.isEmpty()).toBe(false);
     const errors = result.array();
-    expect(errors.some((e: any) => e.path === 'status')).toBe(true);
+    expect(errors.some((e: any) => e.path === "status")).toBe(true);
   });
 
-  test('should accept case-insensitive status values', async () => {
+  test("should accept case-insensitive status values", async () => {
     const reqUpperCase = createMockRequest({
-      name: 'Test Project',
-      description: 'Test Description',
-      status: 'IN PROGRESS',
-      startDate: '2025-01-01T00:00:00.000Z',
+      name: "Test Project",
+      description: "Test Description",
+      status: "IN PROGRESS",
+      startDate: "2025-01-01T00:00:00.000Z",
     });
 
     const result = await runValidations(
@@ -116,12 +116,12 @@ describe('createProjectValidation', () => {
     expect(result.isEmpty()).toBe(true);
   });
 
-  test('should fail when startDate is invalid format', async () => {
+  test("should fail when startDate is invalid format", async () => {
     const req = createMockRequest({
-      name: 'Test Project',
-      description: 'Test Description',
-      status: 'in progress',
-      startDate: 'invalid-date',
+      name: "Test Project",
+      description: "Test Description",
+      status: "in progress",
+      startDate: "invalid-date",
     });
     const res = createMockResponse();
 
@@ -129,15 +129,15 @@ describe('createProjectValidation', () => {
 
     expect(result.isEmpty()).toBe(false);
     const errors = result.array();
-    expect(errors.some((e: any) => e.path === 'startDate')).toBe(true);
+    expect(errors.some((e: any) => e.path === "startDate")).toBe(true);
   });
 
   test('should pass when endDate is null for "in progress" status', async () => {
     const req = createMockRequest({
-      name: 'Test Project',
-      description: 'Test Description',
-      status: 'in progress',
-      startDate: '2025-01-01T00:00:00.000Z',
+      name: "Test Project",
+      description: "Test Description",
+      status: "in progress",
+      startDate: "2025-01-01T00:00:00.000Z",
       endDate: null,
     });
     const res = createMockResponse();
@@ -147,13 +147,13 @@ describe('createProjectValidation', () => {
     expect(result.isEmpty()).toBe(true);
   });
 
-  test('should fail when endDate has invalid format', async () => {
+  test("should fail when endDate has invalid format", async () => {
     const req = createMockRequest({
-      name: 'Test Project',
-      description: 'Test Description',
-      status: 'completed',
-      startDate: '2025-01-01T00:00:00.000Z',
-      endDate: 'invalid-date-format',
+      name: "Test Project",
+      description: "Test Description",
+      status: "completed",
+      startDate: "2025-01-01T00:00:00.000Z",
+      endDate: "invalid-date-format",
     });
     const res = createMockResponse();
 
@@ -161,14 +161,14 @@ describe('createProjectValidation', () => {
 
     expect(result.isEmpty()).toBe(false);
     const errors = result.array();
-    expect(errors.some((e: any) => e.path === 'endDate')).toBe(true);
+    expect(errors.some((e: any) => e.path === "endDate")).toBe(true);
   });
 });
 
-describe('updateProjectValidation', () => {
-  test('should pass with only status field', async () => {
+describe("updateProjectValidation", () => {
+  test("should pass with only status field", async () => {
     const req = createMockRequest({
-      status: 'completed',
+      status: "completed",
     });
     const res = createMockResponse();
 
@@ -177,9 +177,9 @@ describe('updateProjectValidation', () => {
     expect(result.isEmpty()).toBe(true);
   });
 
-  test('should pass with only name field', async () => {
+  test("should pass with only name field", async () => {
     const req = createMockRequest({
-      name: 'Updated Name',
+      name: "Updated Name",
     });
     const res = createMockResponse();
 
@@ -188,11 +188,11 @@ describe('updateProjectValidation', () => {
     expect(result.isEmpty()).toBe(true);
   });
 
-  test('should pass with multiple optional fields', async () => {
+  test("should pass with multiple optional fields", async () => {
     const req = createMockRequest({
-      name: 'Updated Project',
-      description: 'Updated Description',
-      status: 'in progress',
+      name: "Updated Project",
+      description: "Updated Description",
+      status: "in progress",
     });
     const res = createMockResponse();
 
@@ -201,7 +201,7 @@ describe('updateProjectValidation', () => {
     expect(result.isEmpty()).toBe(true);
   });
 
-  test('should pass with empty body (all fields optional)', async () => {
+  test("should pass with empty body (all fields optional)", async () => {
     const req = createMockRequest({});
     const res = createMockResponse();
 
@@ -210,9 +210,9 @@ describe('updateProjectValidation', () => {
     expect(result.isEmpty()).toBe(true);
   });
 
-  test('should fail when status is invalid', async () => {
+  test("should fail when status is invalid", async () => {
     const req = createMockRequest({
-      status: 'invalid-status',
+      status: "invalid-status",
     });
     const res = createMockResponse();
 
@@ -220,12 +220,12 @@ describe('updateProjectValidation', () => {
 
     expect(result.isEmpty()).toBe(false);
     const errors = result.array();
-    expect(errors.some((e: any) => e.path === 'status')).toBe(true);
+    expect(errors.some((e: any) => e.path === "status")).toBe(true);
   });
 
-  test('should fail when name is empty string', async () => {
+  test("should fail when name is empty string", async () => {
     const req = createMockRequest({
-      name: '',
+      name: "",
     });
     const res = createMockResponse();
 
@@ -233,13 +233,13 @@ describe('updateProjectValidation', () => {
 
     expect(result.isEmpty()).toBe(false);
     const errors = result.array();
-    expect(errors.some((e: any) => e.path === 'name')).toBe(true);
+    expect(errors.some((e: any) => e.path === "name")).toBe(true);
   });
 
-  test('should pass when endDate is provided for completed status', async () => {
+  test("should pass when endDate is provided for completed status", async () => {
     const req = createMockRequest({
-      status: 'completed',
-      endDate: '2025-12-31T00:00:00.000Z',
+      status: "completed",
+      endDate: "2025-12-31T00:00:00.000Z",
     });
     const res = createMockResponse();
 
@@ -248,4 +248,3 @@ describe('updateProjectValidation', () => {
     expect(result.isEmpty()).toBe(true);
   });
 });
-

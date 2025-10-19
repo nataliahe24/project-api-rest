@@ -80,7 +80,7 @@ describe("DateIsRequired", () => {
 
       expect(result).toBeInstanceOf(Date);
       expect(result?.getFullYear()).toBe(2025);
-      expect(result?.getMonth()).toBe(9); // October (0-indexed)
+      expect(result?.getMonth()).toBe(9);
     });
 
     test("should handle Date object toString()", () => {
