@@ -22,3 +22,21 @@ export const getProjectById = async (id: number) => {
   }
   return project;
 };
+
+export const createProject = async (project: Project) => {
+  const status = project.status.toLowerCase();
+  const endDate = project.endDate?.toString();
+  const endDateValue = DateIsRequired(status as ProjectStatus, endDate);
+  const data = {
+    name: project.name,
+    description: project.description ?? "",
+    status: project.status,
+    startDate: project.startDate,
+    endDate: endDateValue,
+  };
+  const newProject = await prisma.project.create({
+    data,
+  });
+
+  return newProject;
+};
