@@ -1,6 +1,7 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
 import {
+  createProjectController,
   getProjectByIdController,
   getProjectsController,
 } from "../controllers/project.controller.js";
@@ -48,5 +49,49 @@ router.get("/", getProjectsController);
  */
 router.get("/:id", getProjectByIdController);
 
-router.use(globalErrorHandler);
+/**
+ * @openapi
+ * /project:
+ *   post:
+ *     summary: Create a new project
+ *     tags: [Project]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - status
+ *               - startDate
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [In progress, Completed]
+ *               startDate:
+ *                 type: string
+ *                 format: date-time
+ *               endDate:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ *     responses:
+ *       201:
+ *         description: Created
+ *       400:
+ *         description: Validation error
+ */
+router.post(
+  "/",
+  createProjectValidation,
+  validateRequest,
+  createProjectController
+);
+
 export { router };

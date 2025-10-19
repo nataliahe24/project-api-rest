@@ -1,5 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
-import { getProjects, getProjectById } from "../services/project.service.js";
+import {
+  getProjects,
+  getProjectById,
+  createProject,
+} from "../services/project.service.js";
 
 export const getProjectsController = async (
   req: Request,
@@ -22,6 +26,19 @@ export const getProjectByIdController = async (
   try {
     const project = await getProjectById(Number(req.params.id));
     res.json(project);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createProjectController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const project = await createProject(req.body);
+    res.status(201).json(project);
   } catch (error) {
     next(error);
   }
