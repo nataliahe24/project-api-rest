@@ -4,7 +4,7 @@ export type ProjectStatus = (typeof VALID_PROJECT_STATUSES)[number];
 export interface Project {
   id: string;
   name: string;
-  description?: string;
+  description: string;
   status: ProjectStatus;
   startDate: Date;
   endDate?: Date;

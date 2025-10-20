@@ -1,6 +1,13 @@
 import type { ProjectStatus } from "../interfaces/project.interface.js";
 import { AppError } from "./app.error.js";
 
+const capitalizeStatus = (status: string): string => {
+  return status
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
 export const DateIsRequired = (
   status: ProjectStatus,
   date?: string
@@ -10,7 +17,7 @@ export const DateIsRequired = (
 
   if (status === "completed" && !hasEndDate) {
     throw new AppError(
-      "End date is required when status is " + status,
+      "End date is required when status is " + capitalizeStatus(status),
       400,
       "ValidationError"
     );
@@ -18,7 +25,7 @@ export const DateIsRequired = (
 
   if (status === "in progress" && hasEndDate) {
     throw new AppError(
-      "End date is not allowed when status is " + status,
+      "End date is not allowed when status is " + capitalizeStatus(status),
       400,
       "ValidationError"
     );

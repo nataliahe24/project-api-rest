@@ -17,7 +17,7 @@ datasource db {
 model Project {
   id          Int       @id @default(autoincrement())
   name        String
-  description String?
+  description String
   status      String
   startDate   DateTime
   endDate     DateTime?

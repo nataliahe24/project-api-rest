@@ -186,37 +186,6 @@ describe("Project Service", () => {
       });
     });
 
-    test("should use empty string for missing description", async () => {
-      const projectInput: Project = {
-        id: "1",
-        name: "No Description Project",
-        status: "in progress",
-        startDate: new Date("2025-01-01"),
-      };
-
-      const mockCreatedProject = {
-        id: 1,
-        name: "No Description Project",
-        description: "",
-        status: "in progress",
-        startDate: new Date("2025-01-01"),
-        endDate: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      mockCreate.mockResolvedValue(mockCreatedProject as never);
-
-      const result = await createProject(projectInput);
-
-      expect(result.description).toBe("");
-      expect(mockCreate).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          description: "",
-        }),
-      });
-    });
-
     test("should throw when completed status missing endDate", async () => {
       const projectInput: Project = {
         id: "1",

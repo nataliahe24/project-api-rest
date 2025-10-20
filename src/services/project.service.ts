@@ -29,7 +29,7 @@ export const createProject = async (project: Project) => {
   const endDateValue = DateIsRequired(status as ProjectStatus, endDate);
   const data = {
     name: project.name,
-    description: project.description ?? "",
+    description: project.description,
     status: project.status,
     startDate: project.startDate,
     endDate: endDateValue,
@@ -49,7 +49,7 @@ export const updateProject = async (id: number, project: Project) => {
     where: { id },
     data: {
       name: project.name,
-      description: project.description ?? "",
+      description: project.description,
       status: project.status,
       startDate: project.startDate,
       endDate: endDateValue,
