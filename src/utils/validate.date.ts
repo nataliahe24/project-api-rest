@@ -10,7 +10,7 @@ export const DateIsRequired = (
 
   if (status === "completed" && !hasEndDate) {
     throw new AppError(
-      "End date is required when status is Completed",
+      "End date is required when status is " + status,
       400,
       "ValidationError"
     );
@@ -18,7 +18,7 @@ export const DateIsRequired = (
 
   if (status === "in progress" && hasEndDate) {
     throw new AppError(
-      "End date is not allowed when status is In Progress",
+      "End date is not allowed when status is " + status,
       400,
       "ValidationError"
     );
