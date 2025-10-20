@@ -5,6 +5,8 @@ RESTful API for project management with CRUD operations, built with Node.js, Typ
 ## 🚀 Features
 
 - ✅ **CRUD Operations** for Project entity
+- ✅ **AI-Powered Analytics** with Google Gemini for project insights
+- ✅ **Aggregated Statistics** for data visualization and reporting
 - ✅ **TypeScript** with strict mode and ESM
 - ✅ **Prisma ORM** with PostgreSQL
 - ✅ **Express Validator** for request validation
@@ -45,13 +47,19 @@ npm install express cors @prisma/client dotenv swagger-ui-express swagger-jsdoc 
 npm install -D typescript ts-node tsx nodemon prisma @types/node @types/express @types/cors @types/swagger-jsdoc @types/swagger-ui-express
 ```
 
-### Step 4: Install testing dependencies
+### Step 4: Install AI and analytics dependencies
+
+```bash
+npm install @google/generative-ai
+```
+
+### Step 5: Install testing dependencies
 
 ```bash
 npm install -D jest ts-jest @jest/globals @types/jest
 ```
 
-### Step 5: Configure environment variables
+### Step 6: Configure environment variables
 
 Create a `.env` file in the root directory:
 
@@ -66,13 +74,22 @@ PORT=?
 postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 ```
 
-### Step 6: Initialize Prisma (if starting from scratch)
+**Getting your Gemini API Key:**
+
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click "Create API Key" or "Get API Key"
+4. Copy the key and paste it in your `.env` file
+
+> **Note:** The Gemini API has a generous free tier. The API key is required for the AI analytics endpoint.
+
+### Step 7: Initialize Prisma (if starting from scratch)
 
 ```bash
 npx prisma init --datasource-provider postgresql
 ```
 
-### Step 7: Run Prisma migrations
+### Step 8: Run Prisma migrations
 
 This command creates the database tables based on your schema:
 
@@ -86,7 +103,7 @@ npx prisma migrate dev --name init
 > npx prisma migrate dev --name your_migration_name
 > ```
 
-### Step 8: Generate Prisma Client
+### Step 9: Generate Prisma Client
 
 ```bash
 npx prisma generate
@@ -160,6 +177,102 @@ Current coverage for core business logic:
 | POST   | `/project`     | Create a new project |
 | PUT    | `/project/:id` | Update a project     |
 | DELETE | `/project/:id` | Delete a project     |
+
+### Analytics 🤖
+
+| Method | Endpoint              | Description                                 |
+| ------ | --------------------- | ------------------------------------------- |
+| GET    | `/analytics/graphics` | Get aggregated project statistics by status |
+| GET    | `/analytics/:id`      | Generate AI-powered analysis for a project  |
+
+### Analytics Endpoints Details
+
+#### GET `/analytics/graphics` - Project Statistics
+
+Get aggregated data for charts and visualizations.
+
+**Response (200 OK):**
+
+```json
+{
+  "totalProjects": 10,
+  "projectsByStatus": [
+    {
+      "status": "in progress",
+      "count": 6,
+      "percentage": 60.0
+    },
+    {
+      "status": "completed",
+      "count": 4,
+      "percentage": 40.0
+    }
+  ],
+  "completedProjects": 4,
+  "inProgressProjects": 6
+}
+```
+
+**Use Cases:**
+
+- Generate pie/donut charts showing project distribution by status
+- Create bar charts with project counts per status
+- Display KPIs and metrics in dashboards
+- Generate executive reports with portfolio metrics
+
+#### GET `/analytics/:id` - AI-Powered Project Analysis
+
+Generate an AI-powered executive summary for a specific project using Google Gemini.
+
+**Parameters:**
+
+- `id` (path parameter) - Project ID
+
+**Response (200 OK):**
+
+```json
+{
+  "summary": "This Cloud Migration project aims to transition internal servers and storage to AWS infrastructure. Key objectives include improved scalability, cost optimization, and enhanced reliability. Currently in progress, the migration demonstrates forward-thinking IT strategy. Recommendations: ensure comprehensive backup procedures, staff training on AWS services, and phased implementation to minimize disruption.",
+  "totalProjects": 1,
+  "generatedAt": "2025-10-20T12:30:45.123Z"
+}
+```
+
+**Error Responses:**
+
+- **404 Not Found** - Project doesn't exist
+
+```json
+{
+  "message": "Project not found",
+  "statusCode": 404,
+  "type": "NotFoundError"
+}
+```
+
+- **500 Internal Server Error** - AI service unavailable or API key not configured
+
+```json
+{
+  "message": "Failed to generate AI analysis. Please try again later.",
+  "statusCode": 500,
+  "type": "AIServiceError"
+}
+```
+
+**Use Cases:**
+
+- Generate executive summaries automatically for reports
+- Identify patterns and trends in project portfolio
+- Obtain insights for strategic decision-making
+- Prepare presentations for stakeholders
+- Monthly/quarterly portfolio analysis
+
+**Requirements:**
+
+- Valid `GEMINI_API_KEY` in environment variables
+- Active internet connection
+- Project must exist in database
 
 ### Request/Response Examples
 
@@ -273,36 +386,38 @@ Current coverage for core business logic:
 ```
 project-api-rest/
 ├── src/
-│   ├── app.ts                      # Express application setup
+│   ├── app.ts                         # Express application setup
 │   ├── configurations/
-│   │   └── swagger.ts              # Swagger/OpenAPI configuration
+│   │   └── swagger.ts                 # Swagger/OpenAPI configuration
 │   ├── controllers/
-│   │   └── project.controller.ts  # Request handlers
+│   │   ├── analytics.controller.ts   # Analytics request handlers
+│   │   └── project.controller.ts     # Project request handlers
 │   ├── interfaces/
-│   │   └── project.interface.ts   # TypeScript interfaces
+│   │   ├── analytics.interface.ts    # Analytics TypeScript interfaces
+│   │   └── project.interface.ts      # Project TypeScript interfaces
 │   ├── middlewares/
-│   │   ├── body.validation.ts     # Express-validator rules
-│   │   ├── global.error.handle.ts # Global error handler
-│   │   ├── validate.request.ts    # Validation middleware
-│   │   └── __tests__/             # Middleware tests
+│   │   ├── body.validation.ts        # Express-validator rules
+│   │   ├── global.error.handle.ts    # Global error handler
+│   │   ├── validate.request.ts       # Validation middleware
+│   │   └── __tests__/                # Middleware tests
 │   ├── routes/
-│   │   ├── index.ts               # Dynamic route loader
-│   │   └── project.ts             # Project routes
+│   │   ├── index.ts                  # Dynamic route loader
+│   │   ├── analytics.ts              # Analytics routes
+│   │   └── project.ts                # Project routes
 │   ├── services/
-│   │   └── project.service.ts
-|   |   |__ __tests__/
-|   |
-|   |
+│   │   ├── analytics.service.ts      # Analytics business logic with AI
+│   │   ├── project.service.ts        # Project business logic
+│   │   └── __tests__/                # Service tests
 │   └── utils/
-│       ├── app.error.ts           # Custom error class
-│       ├── validate.date.ts       # Date validation utility
-│       └── __tests__/             # Utility tests
+│       ├── app.error.ts              # Custom error class
+│       ├── validate.date.ts          # Date validation utility
+│       └── __tests__/                # Utility tests
 ├── prisma/
-│   ├── schema.prisma              # Prisma schema
-│   └── migrations/                # Database migrations
-├── jest.config.cjs                # Jest configuration
-├── tsconfig.json                  # TypeScript configuration
-└── package.json                   # Project dependencies
+│   ├── schema.prisma                 # Prisma schema
+│   └── migrations/                   # Database migrations
+├── jest.config.cjs                   # Jest configuration
+├── tsconfig.json                     # TypeScript configuration
+└── package.json                      # Project dependencies
 ```
 
 ## 🔧 Technologies
@@ -312,6 +427,7 @@ project-api-rest/
 - **Express 5** - Web framework
 - **Prisma** - ORM for PostgreSQL
 - **PostgreSQL** - Relational database
+- **Google Gemini AI** - AI-powered project analysis
 - **Swagger UI Express** - API documentation
 - **Express Validator** - Request validation
 - **Jest** - Testing framework
