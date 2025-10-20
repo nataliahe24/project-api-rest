@@ -8,10 +8,6 @@ import { AppError } from "../utils/app.error.js";
 
 const prisma = new PrismaClient();
 
-/**
- * Get aggregated data for graphics
- * Returns project statistics grouped by status
- */
 export const getGraphicsData = async (): Promise<GraphicsData> => {
   const projects = await prisma.project.findMany();
   const totalProjects = projects.length;
@@ -50,10 +46,6 @@ export const getGraphicsData = async (): Promise<GraphicsData> => {
   };
 };
 
-/**
- * Generate AI analysis of a specific project description
- * Uses Google Gemini API to create a summary
- */
 export const generateAnalysis = async (
   projectId: number
 ): Promise<AnalysisResponse> => {
@@ -98,29 +90,14 @@ Project: ${project.name}
 Status: ${project.status}
 Description: ${project.description}
 
-Provide a concise and professional summary in English.`;
+Provide a concise and professional summary only one paragraph in English.`;
 
-  try {
-    const result = await model.generateContent(prompt);
-    const summary = result.response.text();
+  const result = await model.generateContent(prompt);
+  const summary = result.response.text();
 
-    return {
-      summary,
-      totalProjects: 1,
-      generatedAt: new Date(),
-    };
-  } catch (error: any) {
-    console.error("❌ ERROR DETALLADO AL GENERAR ANÁLISIS:");
-    console.error("Tipo de error:", error?.constructor?.name);
-    console.error("Mensaje:", error?.message);
-    console.error("Status:", error?.status);
-    console.error("StatusText:", error?.statusText);
-    console.error("Error completo:", JSON.stringify(error, null, 2));
-
-    throw new AppError(
-      "Failed to generate AI analysis. Please try again later.",
-      500,
-      "AIServiceError"
-    );
-  }
+  return {
+    summary,
+    totalProjects: 1,
+    generatedAt: new Date(),
+  };
 };
