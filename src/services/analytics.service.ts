@@ -72,8 +72,11 @@ export const generateAnalysis = async (
   });
 
   if (!project) {
-    console.error("❌ Proyecto no encontrado:", projectId);
-    throw new AppError("Project not found", 404, "NotFoundError");
+    throw new AppError(
+      `Project with id ${projectId} not found`,
+      404,
+      "NotFoundError"
+    );
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);

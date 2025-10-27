@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test, jest } from "@jest/globals";
 import { AppError } from "../../utils/app.error.js";
 import type { Project } from "../../interfaces/project.interface.js";
 import { mockPrismaClient } from "../../utils/mocks/prisma.js";
+import { mockProjects } from "../../utils/mocks/project.mock.js";
 
 jest.mock("../../generated/prisma/client.js");
 
@@ -26,29 +27,6 @@ describe("Project Service", () => {
 
   describe("getProjects", () => {
     test("should return all projects", async () => {
-      const mockProjects = [
-        {
-          id: 1,
-          name: "Project 1",
-          description: "Description 1",
-          status: "in progress",
-          startDate: new Date("2025-01-01"),
-          endDate: null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 2,
-          name: "Project 2",
-          description: "Description 2",
-          status: "completed",
-          startDate: new Date("2025-10-19T20:11:36.770Z"),
-          endDate: new Date("2025-10-19T20:11:36.770Z"),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
       mockFindMany.mockResolvedValue(mockProjects as never);
 
       const result = await getProjects();
@@ -69,22 +47,11 @@ describe("Project Service", () => {
 
   describe("getProjectById", () => {
     test("should return a project by id", async () => {
-      const mockProject = {
-        id: 1,
-        name: "Project 1",
-        description: "Description 1",
-        status: "in progress",
-        startDate: new Date("2025-01-01"),
-        endDate: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      mockFindUnique.mockResolvedValue(mockProject as never);
+      mockFindUnique.mockResolvedValue(mockProjects[0] as never);
 
       const result = await getProjectById(1);
 
-      expect(result).toEqual(mockProject);
+      expect(result).toEqual(mockProjects[0]);
       expect(mockFindUnique).toHaveBeenCalledWith({
         where: { id: 1 },
       });
@@ -190,6 +157,7 @@ describe("Project Service", () => {
       const projectInput: Project = {
         id: "1",
         name: "Invalid Project",
+        description: "Test Description",
         status: "completed",
         startDate: new Date("2025-01-01"),
       };
@@ -204,6 +172,7 @@ describe("Project Service", () => {
       const projectInput: Project = {
         id: "1",
         name: "Invalid Project",
+        description: "Test Description",
         status: "in progress",
         startDate: new Date("2025-01-01"),
         endDate: new Date("2025-12-31"),
@@ -258,6 +227,7 @@ describe("Project Service", () => {
       const projectUpdate: Project = {
         id: "1",
         name: "Finished Project",
+        description: "Test Description",
         status: "completed",
         startDate: new Date("2025-01-01"),
         endDate: new Date("2025-12-31"),
@@ -266,7 +236,7 @@ describe("Project Service", () => {
       const mockUpdatedProject = {
         id: 1,
         name: "Finished Project",
-        description: "",
+        description: "Test Description",
         status: "completed",
         startDate: new Date("2025-01-01"),
         endDate: new Date("2025-12-31"),
@@ -286,6 +256,7 @@ describe("Project Service", () => {
       const projectUpdate: Project = {
         id: "1",
         name: "Invalid Update",
+        description: "Test Description",
         status: "completed",
         startDate: new Date("2025-01-01"),
       };
@@ -300,6 +271,7 @@ describe("Project Service", () => {
       const projectUpdate: Project = {
         id: "1",
         name: "Project",
+        description: "Test Description",
         status: "in progress",
         startDate: new Date("2025-01-01"),
       };
@@ -307,7 +279,7 @@ describe("Project Service", () => {
       const mockUpdatedProject = {
         id: 1,
         name: "Project",
-        description: "",
+        description: "Test Description",
         status: "in progress",
         startDate: new Date("2025-01-01"),
         endDate: null,
@@ -325,23 +297,12 @@ describe("Project Service", () => {
 
   describe("deleteProject", () => {
     test("should delete project successfully", async () => {
-      const mockProject = {
-        id: 1,
-        name: "Project to Delete",
-        description: "Test",
-        status: "in progress",
-        startDate: new Date("2025-01-01"),
-        endDate: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      mockFindUnique.mockResolvedValue(mockProject as never);
-      mockDelete.mockResolvedValue(mockProject as never);
+      mockFindUnique.mockResolvedValue(mockProjects[0] as never);
+      mockDelete.mockResolvedValue(mockProjects[0] as never);
 
       const result = await deleteProject(1);
 
-      expect(result).toEqual(mockProject);
+      expect(result).toEqual(mockProjects[0]);
       expect(mockFindUnique).toHaveBeenCalledWith({
         where: { id: 1 },
       });

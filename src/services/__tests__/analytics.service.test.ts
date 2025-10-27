@@ -9,13 +9,18 @@ import {
 import { AppError } from "../../utils/app.error.js";
 import { mockPrismaClient } from "../../utils/mocks/prisma.js";
 import { mockProjects } from "../../utils/mocks/project.mock.js";
-import {
-  mockGenerateContent,
-  mockGetGenerativeModel,
-  mockGoogleGenerativeAI,
-} from "../../utils/mocks/google-ai.mock.js";
 
 jest.mock("../../generated/prisma/client.js");
+
+const mockGenerateContent = jest.fn();
+
+const mockGetGenerativeModel = jest.fn((_config?: { model: string }) => ({
+  generateContent: mockGenerateContent,
+}));
+
+const mockGoogleGenerativeAI = jest.fn().mockImplementation(() => ({
+  getGenerativeModel: mockGetGenerativeModel,
+}));
 
 jest.unstable_mockModule("@google/generative-ai", () => ({
   GoogleGenerativeAI: mockGoogleGenerativeAI,
@@ -173,7 +178,9 @@ describe("Analytics Service", () => {
       mockFindUnique.mockResolvedValue(null as never);
 
       await expect(generateAnalysis(999)).rejects.toThrow(AppError);
-      await expect(generateAnalysis(999)).rejects.toThrow("Project not found");
+      await expect(generateAnalysis(999)).rejects.toThrow(
+        "Project with id 999 not found"
+      );
 
       expect(mockFindUnique).toHaveBeenCalledWith({
         where: { id: 999 },
