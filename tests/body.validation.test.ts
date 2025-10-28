@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import {
   createProjectValidation,
   updateProjectValidation,
-} from "../body.validation.js";
+} from "../src/middlewares/body.validation.js";
 import type { Request, Response } from "express";
 
 const createMockRequest = (body: any): Partial<Request> => ({

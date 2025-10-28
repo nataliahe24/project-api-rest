@@ -6,11 +6,14 @@ import {
   test,
   jest,
 } from "@jest/globals";
-import { AppError } from "../../utils/app.error.js";
-import { mockPrismaClient } from "../../utils/mocks/prisma.js";
-import { mockProjects } from "../../utils/mocks/project.mock.js";
+import { AppError } from "../src/utils/app.error.js";
+import { mockPrismaClient } from "../src/utils/mocks/prisma.js";
+import {
+  mockProjectFactory,
+  createMultipleProjects,
+} from "../src/utils/mocks/project.mock.js";
 
-jest.mock("../../generated/prisma/client.js");
+jest.mock("../src/generated/prisma/client.js");
 
 const mockGenerateContent = jest.fn();
 
@@ -27,7 +30,7 @@ jest.unstable_mockModule("@google/generative-ai", () => ({
 }));
 
 const { getGraphicsData, generateAnalysis } = await import(
-  "../analytics.service.js"
+  "../src/services/analytics.service.js"
 );
 
 const mockFindMany = mockPrismaClient.project.findMany;
@@ -62,9 +65,9 @@ describe("Analytics Service", () => {
     });
 
     test("should calculate statistics with single project", async () => {
-      const singleProject = [mockProjects[0]];
+      const singleProject = mockProjectFactory({ status: "in progress" });
 
-      mockFindMany.mockResolvedValue(singleProject as never);
+      mockFindMany.mockResolvedValue([singleProject] as never);
 
       const result = await getGraphicsData();
 
@@ -80,18 +83,29 @@ describe("Analytics Service", () => {
     });
 
     test("should calculate statistics with multiple projects", async () => {
-      mockFindMany.mockResolvedValue(mockProjects as never);
+      const testProjects = [
+        mockProjectFactory({ id: "1", status: "completed" }),
+        mockProjectFactory({ id: "2", status: "completed" }),
+        mockProjectFactory({ id: "3", status: "in progress" }),
+        mockProjectFactory({ id: "4", status: "completed" }),
+      ];
+
+      mockFindMany.mockResolvedValue(testProjects as never);
 
       const result = await getGraphicsData();
 
       expect(result.totalProjects).toBe(4);
-      expect(result.completedProjects).toBe(2);
+      expect(result.completedProjects).toBe(3);
       expect(result.inProgressProjects).toBe(1);
-      expect(result.projectsByStatus).toHaveLength(3);
+      expect(result.projectsByStatus).toHaveLength(2);
     });
 
     test("should calculate correct percentages", async () => {
-      const testProjects = [mockProjects[1], mockProjects[2], mockProjects[0]];
+      const testProjects = [
+        mockProjectFactory({ id: "1", status: "completed" }),
+        mockProjectFactory({ id: "2", status: "completed" }),
+        mockProjectFactory({ id: "3", status: "in progress" }),
+      ];
 
       mockFindMany.mockResolvedValue(testProjects as never);
 
@@ -110,9 +124,9 @@ describe("Analytics Service", () => {
 
     test("should handle status case insensitivity", async () => {
       const testProjects = [
-        { ...mockProjects[0], status: "In Progress" },
-        { ...mockProjects[0], id: 5, status: "IN PROGRESS" },
-        { ...mockProjects[1], status: "Completed" },
+        mockProjectFactory({ id: "5", status: "in progress" }),
+        mockProjectFactory({ id: "6", status: "completed" }),
+        mockProjectFactory({ id: "7", status: "in progress" }),
       ];
 
       mockFindMany.mockResolvedValue(testProjects as never);
@@ -129,7 +143,9 @@ describe("Analytics Service", () => {
     });
 
     test("should handle all projects with same status", async () => {
-      const completedProjects = [mockProjects[1], mockProjects[2]];
+      const completedProjects = createMultipleProjects(2, {
+        status: "completed",
+      });
 
       mockFindMany.mockResolvedValue(completedProjects as never);
 
@@ -151,7 +167,9 @@ describe("Analytics Service", () => {
         },
       };
 
-      mockFindUnique.mockResolvedValue(mockProjects[0] as never);
+      mockFindUnique.mockResolvedValue(
+        mockProjectFactory({ status: "in progress" }) as never
+      );
       mockGenerateContent.mockResolvedValue(mockAIResponse as never);
 
       const result = await generateAnalysis(1);
@@ -267,7 +285,9 @@ describe("Analytics Service", () => {
         },
       };
 
-      mockFindUnique.mockResolvedValue(mockProjects[1] as never);
+      mockFindUnique.mockResolvedValue(
+        mockProjectFactory({ status: "in progress" }) as never
+      );
       mockGenerateContent.mockResolvedValue(mockAIResponse as never);
 
       await generateAnalysis(1);
@@ -285,7 +305,9 @@ describe("Analytics Service", () => {
         },
       };
 
-      mockFindUnique.mockResolvedValue(mockProjects[2] as never);
+      mockFindUnique.mockResolvedValue(
+        mockProjectFactory({ status: "completed" }) as never
+      );
       mockGenerateContent.mockResolvedValue(mockAIResponse as never);
 
       const result = await generateAnalysis(1);
@@ -302,7 +324,9 @@ describe("Analytics Service", () => {
         },
       };
 
-      mockFindUnique.mockResolvedValue(mockProjects[0] as never);
+      mockFindUnique.mockResolvedValue(
+        mockProjectFactory({ status: "in progress" }) as never
+      );
       mockGenerateContent.mockResolvedValue(mockAIResponse as never);
 
       const beforeCall = new Date();
@@ -318,7 +342,9 @@ describe("Analytics Service", () => {
     });
 
     test("should handle AI response errors gracefully", async () => {
-      mockFindUnique.mockResolvedValue(mockProjects[0] as never);
+      mockFindUnique.mockResolvedValue(
+        mockProjectFactory({ status: "in progress" }) as never
+      );
       mockGenerateContent.mockRejectedValue(
         new Error("AI service unavailable") as never
       );

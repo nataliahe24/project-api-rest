@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { AppError } from "../app.error.js";
+import { AppError } from "../src/utils/app.error.js";
 
 describe("AppError", () => {
   test("should create an error with default values", () => {

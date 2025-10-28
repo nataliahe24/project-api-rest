@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@jest/globals";
-import { DateIsRequired } from "../validate.date.js";
-import { AppError } from "../app.error.js";
+import { DateIsRequired } from "../src/utils/validate.date.js";
+import { AppError } from "../src/utils/app.error.js";
 
 describe("DateIsRequired", () => {
   describe('when status is "completed"', () => {
